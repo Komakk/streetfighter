@@ -2,6 +2,7 @@ import { Ken } from "./entities/fighters/Ken.js";
 import { Stage } from "./entities/Stage.js";
 import { Ryu } from "./entities/fighters/Ryu.js";
 import { FpsCounter } from "./entities/FpsCounter.js";
+import { STAGE_FLOOR } from "./constants/stage.js";
 
 const GameViewport = {
     WIDTH: 384,
@@ -17,8 +18,8 @@ window.addEventListener('load', function() {
 
     const entities = [
         new Stage(),
-        new Ken(80, 110, 150),
-        new Ryu(80, 110, -150),
+        new Ken(80, STAGE_FLOOR, 150),
+        new Ryu(80, STAGE_FLOOR, -150),
         new FpsCounter(),
     ];
 
