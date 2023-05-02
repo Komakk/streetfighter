@@ -3,23 +3,51 @@ import { Stage } from "./entities/Stage.js";
 import { Ryu } from "./entities/fighters/Ryu.js";
 import { FpsCounter } from "./entities/FpsCounter.js";
 import { STAGE_FLOOR } from "./constants/stage.js";
+import { FighterDirection, FighterState } from "./constants/fighter.js";
 
-const GameViewport = {
-    WIDTH: 384,
-    HEIGHT: 224,
+function populateMoveDropDown() {
+    const dropdown = document.getElementById('state-dropdown');
+
+    Object.entries(FighterState).forEach(([, value]) => {
+        const option = document.createElement('option');
+        option.setAttribute('value', value);
+        option.innerText = value;
+        dropdown.appendChild(option);
+    });
+}
+
+function handleFormsubmit(event, fighters) {
+    event.preventDefault();
+
+    const selectedCheckboxes = Array
+    .from(event.target.querySelectorAll('input:checked'))
+    .map(checkbox => checkbox.value);
+
+    const options = event.target.querySelector('select');
+
+    fighters.forEach(fighter => {
+        if (selectedCheckboxes.includes(fighter.name)) {
+            fighter.changeState(options.value);
+        }
+    });
 }
 
 window.addEventListener('load', function() {
+    populateMoveDropDown();
+
     const canvasEl = document.querySelector('canvas');
     const context = canvasEl.getContext('2d');
 
-    canvasEl.width = GameViewport.WIDTH;
-    canvasEl.height = GameViewport.HEIGHT;
+    context.imageSmoothingEnabled = false;
+
+    const fighters = [
+        new Ryu(104, STAGE_FLOOR, FighterDirection.RIGHT),
+        new Ken(280, STAGE_FLOOR, FighterDirection.LEFT),
+    ];
 
     const entities = [
         new Stage(),
-        new Ken(80, STAGE_FLOOR, 150),
-        new Ryu(80, STAGE_FLOOR, -150),
+        ...fighters,
         new FpsCounter(),
     ];
 
@@ -46,6 +74,8 @@ window.addEventListener('load', function() {
             entity.draw(context);
         }
     }
+
+    this.document.addEventListener('submit', (event) => handleFormsubmit(event, fighters));
 
     window.requestAnimationFrame(frame);
 });
